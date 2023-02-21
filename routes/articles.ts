@@ -2,10 +2,10 @@ import Router, { RouterContext } from "koa-router";
 import bodyParser from "koa-bodyparser";
 
 const articles = [
-  { title: 'hello article', fullText: 'some text here to fill the body' },
-  { title: 'another article', fullText: 'again here is some text here to fill the body' },
-  { title: 'conventry university', fullText: 'some news about conventry university' },
-  { title: 'smart campus', fullText: 'smart campus hahaha ?.?' }
+  { title: 'hello article', fullText: 'some text here to fill the body',createDate:new Date(),editedDate:new Date()},
+  { title: 'another article', fullText: 'again here is some text here to fill the body',createDate:new Date(),editedDate:new Date() },
+  { title: 'conventry university', fullText: 'some news about conventry university',createDate:new Date(),editedDate:new Date() },
+  { title: 'smart campus', fullText: 'smart campus hahaha ?.?',createDate:new Date(),editedDate:new Date() }
 ]
 
 const router = new Router({ prefix: '/api/v1/articles' });
@@ -14,15 +14,17 @@ const getAll = async (ctx: RouterContext, next: any) => {
   ctx.body = articles;
   await next();
 };
+
 const createArticle = async (ctx: RouterContext, next: any) => {
   let { title, fullText } = ctx.request.body;
-  let newArticle = { title: title, fullText: fullText };
+  let newArticle = { title: title, fullText: fullText,createDate:new Date(), editedDate: new Date()};
 
   articles.push(newArticle);
-  ctx.status = 201;
+  ctx.status = 404;
   ctx.body = newArticle;
   await next();
 }
+
 const getById = async (ctx: RouterContext, next: any) => {
   let id = +ctx.params.id
   if ((id < articles.length+1) && (id > 0)) {
@@ -33,6 +35,7 @@ const getById = async (ctx: RouterContext, next: any) => {
   await next();
 };
 
+
 const updateArticle = async (ctx: RouterContext, next: any) => {
 
   let { title, fullText } = ctx.request.body;
@@ -42,13 +45,17 @@ const updateArticle = async (ctx: RouterContext, next: any) => {
   articles[id] = newArticle;
   
   ctx.body = newArticle;
-  
+
+  ctx.status = 404;
   await next();
 };
+
 const deleteArticle = async (ctx: RouterContext, next: any) => {
   let id = +ctx.params.id
   articles.splice(articles.indexOf(id,0),1);
+  ctx.status = 404;
 };
+
 
 router.get('/', getAll);
 router.post('/', bodyParser(), createArticle);
